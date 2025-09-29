@@ -1,6 +1,4 @@
-from web3 import Web3
 import boto3
-import json
 from datetime import datetime, timedelta
 import io
 import warnings
@@ -33,6 +31,7 @@ client_s3 = boto3.client(
 alpha = 2
 n_iter = 20
 
+
 def extract_data(client_s3, day: datetime, top):
     day_str = day.strftime("%Y-%m-%d")
 
@@ -56,6 +55,7 @@ def extract_data(client_s3, day: datetime, top):
 
     return nodes_info, nodes_impacts, prices_shocks
 
+
 start = datetime(2024, 1, 1)
 stop = datetime(2024, 1, 31)
 day = start
@@ -63,10 +63,12 @@ day = start
 while day <= stop:
     for top in [k * 100 for k in range(9)]:
         print("Starting DebtRank run for day", day)
-        
+
         print("STEP 1 - Extracting input data...")
 
-        nodes_info, nodes_impacts, prices_shocks = extract_data(client_s3=client_s3, day=day, top=top)
+        nodes_info, nodes_impacts, prices_shocks = extract_data(
+            client_s3=client_s3, day=day, top=top
+        )
 
         print("STEP 2 - Processing intputs...")
 

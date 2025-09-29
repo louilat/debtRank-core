@@ -1,6 +1,4 @@
-from web3 import Web3
 import boto3
-import json
 from datetime import datetime, timedelta
 import io
 import warnings
@@ -24,25 +22,26 @@ secret_access_key = os.environ["SECRET_ACCESS_KEY"]
 
 client_s3 = boto3.client(
     "s3",
-    endpoint_url="https://" + "minio-simple.lab.groupe-genes.fr",
+    region_name="eu-north-1",
     aws_access_key_id=access_key_id,
     aws_secret_access_key=secret_access_key,
-    verify=False,
 )
 
 alpha = 2
 n_iter = 20
 
-start = datetime(2024, 1, 1)
-stop = datetime(2024, 1, 31)
+start = datetime(2024, 7, 1)
+stop = datetime(2024, 7, 1)
 day = start
 
 while day <= stop:
     print("Starting DebtRank run for day", day)
-    
+
     print("STEP 1 - Extracting input data...")
 
-    nodes_info, nodes_impacts, prices_shocks = extract_data(client_s3=client_s3, day=day)
+    nodes_info, nodes_impacts, prices_shocks = extract_data(
+        client_s3=client_s3, day=day
+    )
 
     print("STEP 2 - Processing intputs...")
 
@@ -91,26 +90,24 @@ while day <= stop:
 
     day_str = day.strftime("%Y-%m-%d")
 
-    buffer = io.StringIO()
-    scores_output.to_csv(buffer, index=False)
-    client_s3.put_object(
-        Bucket="projet-datalab-group-jprat",
-        Key=f"debtrank/debtrank-outputs/debtrank_outputs_snapshot_date={day_str}/scores.csv",
-        Body=buffer.getvalue(),
-    )
+    # buffer = io.StringIO()
+    # scores_output.to_csv(buffer, index=False)
     # client_s3.put_object(
     #     Bucket="projet-datalab-group-jprat",
-    #     Key=f"debtrank/debtrank-outputs-bis/debtrank_outputs_snapshot_date={day_str}/scores_without_top_100.csv",
+    #     Key=f"debtrank/debtrank-outputs-dev/debtrank_outputs_snapshot_date={day_str}/scores.csv",
     #     Body=buffer.getvalue(),
     # )
 
-    buffer = io.StringIO()
-    grad_output.to_csv(buffer, index=False)
-    client_s3.put_object(
-        Bucket="projet-datalab-group-jprat",
-        Key=f"debtrank/debtrank-outputs/debtrank_outputs_snapshot_date={day_str}/connections_gradients.csv",
-        Body=buffer.getvalue(),
-    )
+    # buffer = io.StringIO()
+    # grad_output.to_csv(buffer, index=False)
+    # client_s3.put_object(
+    #     Bucket="projet-datalab-group-jprat",
+    #     Key=f"debtrank/debtrank-outputs-dev/debtrank_outputs_snapshot_date={day_str}/connections_gradients.csv",
+    #     Body=buffer.getvalue(),
+    # )
+    scores_output.to_csv("data/scores.csv", index=False)
+    grad_output.to_csv("data/gradients.csv", index=False)
+
 
     print("Done!")
     day += timedelta(days=1)

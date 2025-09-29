@@ -6,6 +6,9 @@ import numpy as np
 
 
 def preprocess_debtrank_inputs(nodes_info: DataFrame, impact_weights: DataFrame):
+    """
+    Encode nodes names to unique id per category.
+    """
     assert len(nodes_info) == len(nodes_info.drop_duplicates(subset="name")), (
         "Same name found for different nodes in nodes_info, please check your input"
     )
